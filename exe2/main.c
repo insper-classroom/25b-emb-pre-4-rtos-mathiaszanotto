@@ -28,15 +28,13 @@ void gpio_btn_isr(uint gpio, uint32_t events) {
   portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
-// LED R: acorda via semáforo; sem polling
-static void led_1_task(void *p) {
+void led_1_task(void *p) {
   for (;;) {
     xSemaphoreTake(xSemaphore_r, portMAX_DELAY);
-    // trate “apertou e soltou” na própria task, se desejado
     gpio_put(LED_R_PIN, 1);
     vTaskDelay(pdMS_TO_TICKS(100));
     gpio_put(LED_R_PIN, 0);
-    vTaskDelay(pdMS_TO_TICKS(10)); // debounce simples
+    vTaskDelay(pdMS_TO_TICKS(10));
   }
 }
 
@@ -63,25 +61,25 @@ void btn_2_task(void *p) {
 }
 
 int main(void) {
-    stdio_init_all();
+  stdio_init_all();
 
-    gpio_init(LED_R_PIN); gpio_set_dir(LED_R_PIN, GPIO_OUT); gpio_put(LED_R_PIN, 0);
-    gpio_init(LED_G_PIN); gpio_set_dir(LED_G_PIN, GPIO_OUT); gpio_put(LED_G_PIN, 0);
+  gpio_init(LED_R_PIN); gpio_set_dir(LED_R_PIN, GPIO_OUT); gpio_put(LED_R_PIN, 0);
+  gpio_init(LED_G_PIN); gpio_set_dir(LED_G_PIN, GPIO_OUT); gpio_put(LED_G_PIN, 0);
 
-    gpio_init(BTN_R_PIN); gpio_set_dir(BTN_R_PIN, GPIO_IN); gpio_pull_up(BTN_R_PIN);
-    gpio_init(BTN_G_PIN); gpio_set_dir(BTN_G_PIN, GPIO_IN); gpio_pull_up(BTN_G_PIN);
+  gpio_init(BTN_R_PIN); gpio_set_dir(BTN_R_PIN, GPIO_IN); gpio_pull_up(BTN_R_PIN);
+  gpio_init(BTN_G_PIN); gpio_set_dir(BTN_G_PIN, GPIO_IN); gpio_pull_up(BTN_G_PIN);
 
-    xSemaphore_r = xSemaphoreCreateBinary();
-    xSemaphore_g = xSemaphoreCreateBinary();
+  xSemaphore_r = xSemaphoreCreateBinary();
+  xSemaphore_g = xSemaphoreCreateBinary();
 
-    gpio_set_irq_enabled_with_callback(BTN_R_PIN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true, gpio_btn_isr);
-    gpio_set_irq_enabled(BTN_G_PIN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
+  gpio_set_irq_enabled_with_callback(BTN_R_PIN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true, gpio_btn_isr);
+  gpio_set_irq_enabled(BTN_G_PIN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
 
-    xTaskCreate(btn_1_task, "BTN1", 512, NULL, tskIDLE_PRIORITY + 1, NULL);
-    xTaskCreate(led_1_task, "LED1", 512, NULL, tskIDLE_PRIORITY + 1, NULL);
-    xTaskCreate(btn_2_task, "BTN2", 512, NULL, tskIDLE_PRIORITY + 1, NULL);
-    xTaskCreate(led_2_task, "LED2", 512, NULL, tskIDLE_PRIORITY + 1, NULL);
+  xTaskCreate(btn_1_task, "BTN1", 512, NULL, tskIDLE_PRIORITY + 1, NULL);
+  xTaskCreate(led_1_task, "LED1", 512, NULL, tskIDLE_PRIORITY + 1, NULL);
+  xTaskCreate(btn_2_task, "BTN2", 512, NULL, tskIDLE_PRIORITY + 1, NULL);
+  xTaskCreate(led_2_task, "LED2", 512, NULL, tskIDLE_PRIORITY + 1, NULL);
 
-    vTaskStartScheduler();
-    for (;;);
+  vTaskStartScheduler();
+  for (;;);
 }
