@@ -74,7 +74,7 @@ void btn_2_task(void *p) {
       while (!gpio_get(BTN_PIN_G)) {
         vTaskDelay(pdMS_TO_TICKS(1));
       }
-      xSemaphoreGive(xSemaphore_g;
+      xSemaphoreGive(xSemaphore_g);
     }
   }
 }
