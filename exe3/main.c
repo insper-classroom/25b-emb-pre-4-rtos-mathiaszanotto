@@ -1,4 +1,3 @@
-// exe3/main.c
 #include <FreeRTOS.h>
 #include <task.h>
 #include <semphr.h>
@@ -112,7 +111,7 @@ void btn_2_task(void *p) {
 
     for (;;) {
         if (xQueueReceive(xQueueEdgeG, &ev, portMAX_DELAY)) {
-            if (ev == 1) { // FALL
+            if (ev == 1) {
                 pressed = true;
             } else if (ev == 2 && pressed) {
                 pressed = false;
