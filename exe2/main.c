@@ -17,15 +17,13 @@ SemaphoreHandle_t xSemaphore_g;
 
 
 void gpio_btn_isr(uint gpio, uint32_t events) {
-  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-
   if (gpio == BTN_R_PIN && (events & (GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE))) {
-      xSemaphoreGiveFromISR(xSemaphore_r, &xHigherPriorityTaskWoken);
+      xSemaphoreGiveFromISR(xSemaphore_r, NULL);
   } else if (gpio == BTN_G_PIN && (events & (GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE))) {
-      xSemaphoreGiveFromISR(xSemaphore_g, &xHigherPriorityTaskWoken);
+      xSemaphoreGiveFromISR(xSemaphore_g, NULL);
   }
 
-  portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+  portYIELD_FROM_ISR(0);
 }
 
 void led_1_task(void *p) {
