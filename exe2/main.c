@@ -18,7 +18,7 @@ SemaphoreHandle_t xSemaphore_g;
 
 void gpio_btn_isr(uint gpio, uint32_t events) {
   if (gpio == BTN_R_PIN && (events & (GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE))) {
-      xSemaphoreGiveFromISR(xSemaphore_r, 0;
+      xSemaphoreGiveFromISR(xSemaphore_r, 0);
   } else if (gpio == BTN_G_PIN && (events & (GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE))) {
       xSemaphoreGiveFromISR(xSemaphore_g, 0);
   }
